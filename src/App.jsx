@@ -1,73 +1,90 @@
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import Hero from './components/Hero';
+import VsCodeShell from './components/VsCodeShell';
+import { ProjectsSection, ExperienceSection, AboutSection } from './components/Sections';
+import Particles from 'react-tsparticles';
+import { loadFull } from 'tsparticles';
+
 function App() {
+  const [activeTab, setActiveTab] = useState('js');
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      {/* Subtle pattern overlay */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.05),transparent_50%)]"></div>
+    <div className="min-h-screen bg-[#0a192f] text-white">
+      {/* Particles background subtle */}
+      <Particles id="tsparticles" init={loadFull} options={{
+        background: { color: { value: '#0a192f' } },
+        fpsLimit: 60,
+        interactivity: { events: { onHover: { enable: false }, resize: true } },
+        particles: { number: { value: 30 }, color: { value: '#64ffda' }, links: { enable: true, color: '#233554' }, move: { enable: true, speed: 0.6 }, opacity: { value: 0.2 }, size: { value: { min: 1, max: 2 } } }
+      }} />
 
-      <div className="relative min-h-screen flex items-center justify-center p-8">
-        <div className="max-w-2xl w-full">
-          {/* Header with Flames icon */}
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center mb-6">
-              <img
-                src="/flame-icon.svg"
-                alt="Flames"
-                className="w-24 h-24 drop-shadow-[0_0_25px_rgba(59,130,246,0.5)]"
-              />
-            </div>
+      <Hero />
 
-            <h1 className="text-5xl font-bold text-white mb-4 tracking-tight">
-              Flames Blue
-            </h1>
-
-            <p className="text-xl text-blue-200 mb-6">
-              Build applications through conversation
-            </p>
+      <VsCodeShell activeTab={activeTab} setActiveTab={setActiveTab}>
+        {activeTab === 'js' && <ProjectsSection />}
+        {activeTab === 'json' && <ExperienceSection />}
+        {activeTab === 'md' && <AboutSection />}
+        {activeTab === 'ts' && (
+          <div className="p-6">
+            <ContactForm />
           </div>
+        )}
+      </VsCodeShell>
 
-          {/* Instructions */}
-          <div className="bg-slate-800/50 backdrop-blur-sm border border-blue-500/20 rounded-2xl p-8 shadow-xl mb-6">
-            <div className="flex items-start gap-4 mb-6">
-              <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-lg flex items-center justify-center font-bold">
-                1
-              </div>
-              <div>
-                <h3 className="font-semibold text-white mb-1">Describe your idea</h3>
-                <p className="text-blue-200/80 text-sm">Use the chat panel on the left to tell the AI what you want to build</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4 mb-6">
-              <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-lg flex items-center justify-center font-bold">
-                2
-              </div>
-              <div>
-                <h3 className="font-semibold text-white mb-1">Watch it build</h3>
-                <p className="text-blue-200/80 text-sm">Your app will appear in this preview as the AI generates the code</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-lg flex items-center justify-center font-bold">
-                3
-              </div>
-              <div>
-                <h3 className="font-semibold text-white mb-1">Refine and iterate</h3>
-                <p className="text-blue-200/80 text-sm">Continue the conversation to add features and make changes</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Footer */}
-          <div className="text-center">
-            <p className="text-sm text-blue-300/60">
-              No coding required • Just describe what you want
-            </p>
-          </div>
-        </div>
-      </div>
+      <Footer />
     </div>
-  )
+  );
 }
 
-export default App
+const Footer = () => (
+  <footer className="bg-black text-green-400 px-6 py-4 font-mono text-sm flex items-center justify-between border-t border-[#2a2a2a]">
+    <div>devang@portfolio:~$ echo \"Hello, world\"</div>
+    <div className="animate-pulse">_</div>
+  </footer>
+);
+
+function ContactForm() {
+  const [status, setStatus] = React.useState('');
+  const [form, setForm] = React.useState({ name: '', email: '', message: '' });
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setStatus('Sending...');
+    try {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/api/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form)
+      });
+      const data = await res.json();
+      setStatus(data?.message || 'Sent');
+    } catch (e) {
+      setStatus('Failed to send');
+    }
+  };
+
+  return (
+    <form onSubmit={submit} className="grid gap-4">
+      <div>
+        <label className="block text-sm mb-1">Name</label>
+        <input className="w-full bg-[#111827] border border-[#2a2a2a] rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" value={form.name} onChange={(e)=>setForm({...form, name:e.target.value})} required />
+      </div>
+      <div>
+        <label className="block text-sm mb-1">Email</label>
+        <input type="email" className="w-full bg-[#111827] border border-[#2a2a2a] rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" value={form.email} onChange={(e)=>setForm({...form, email:e.target.value})} required />
+      </div>
+      <div>
+        <label className="block text-sm mb-1">Message</label>
+        <textarea className="w-full bg-[#111827] border border-[#2a2a2a] rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" rows={4} value={form.message} onChange={(e)=>setForm({...form, message:e.target.value})} required />
+      </div>
+      <button className="relative group inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600/80 px-5 py-3 text-white backdrop-blur transition-all hover:scale-[1.02] hover:bg-blue-500">
+        <span className="absolute inset-0 -z-10 rounded-lg bg-blue-500/50 blur-md opacity-0 group-hover:opacity-100 transition"/>
+        Send
+      </button>
+      <div className="text-sm text-blue-200/80 min-h-[20px]">{status}</div>
+    </form>
+  );
+}
+
+export default App;
