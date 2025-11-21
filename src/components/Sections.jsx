@@ -2,7 +2,7 @@ import React from 'react';
 import Editor from '@monaco-editor/react';
 
 export const ProjectsSection = () => {
-  const code = `// projects.js\nexport const projects = [\n  {\n    title: 'AnimeWatchlist Manager',\n    stack: 'React + Supabase',\n    code: `function addAnime(title){ /* supabase insert */ }`,\n    demo: 'https://example.com/animewatchlist'\n  },\n  {\n    title: 'Ayursutra Patient Portal',\n    stack: 'Figma design',\n    code: `// Prototype built in Figma`,\n    demo: 'https://figma.com/@ayursutra'\n  }\n];`;
+  const code = `// projects.js\nexport const projects = [\n  {\n    title: 'AnimeWatchlist Manager',\n    stack: 'React + Supabase',\n    code: "function addAnime(title){ /* supabase insert */ }",\n    demo: 'https://example.com/animewatchlist'\n  },\n  {\n    title: 'Ayursutra Patient Portal',\n    stack: 'Figma design',\n    code: "// Prototype built in Figma",\n    demo: 'https://figma.com/@ayursutra'\n  }\n];`;
   return (
     <Editor height="420px" defaultLanguage="javascript" theme="vs-dark" value={code} options={{ readOnly: true, minimap: { enabled: false }, fontSize: 14 }} />
   );
